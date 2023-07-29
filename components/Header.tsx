@@ -6,6 +6,10 @@ import {RxCaretLeft, RxCaretRight} from 'react-icons/rx'
 import {HiHome} from 'react-icons/hi'
 import {BiSearch} from 'react-icons/bi'
 import Button from "./Button"
+import useAuthModal from "@/hooks/useAuthModal"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useUser } from "@/hooks/useUser"
+import { FaUserAlt } from "react-icons/fa"
 
 
 interface HeaderInterface {
@@ -15,8 +19,19 @@ interface HeaderInterface {
 
 const Header :React.FC<HeaderInterface> = ({children, className}) => {
   const router = useRouter()
+  const {onOpen} = useAuthModal()
+  const supabaseClient = useSupabaseClient()
+  const {user} = useUser()
 
+  const handleLogout = async () => {
+    const { error } = await supabaseClient.auth.signOut();
 
+    router.refresh();
+
+    if (error) {
+      console.error(error.message);
+    }
+  }
   return (
     <div className={twMerge(`
       h-fit
@@ -43,18 +58,36 @@ const Header :React.FC<HeaderInterface> = ({children, className}) => {
           </button>
         </div>
         <div className="flex justify-between items-center gap-x-4">
-          <>
-            <div>
-              <Button onClick={() => {}} className=" bg-transparent text-neutral-300 font-medium">
-                Sign up
+          {user ? (
+            <div className="flex items-center gap-x-4">
+              <Button
+                onClick={handleLogout}
+                className="bg-white px-6 py-2"
+              >
+                Logout
+              </Button>
+              <Button
+                onClick={() => router.push('/account')}
+                className="bg-white"
+              >
+                <FaUserAlt/>
               </Button>
             </div>
-            <div>
-              <Button onClick={() => {}} className="bg-white px-6 py-2">
-                Log in
-              </Button>
-            </div>
-          </>
+          ) : (
+            <>
+              <div>
+                <Button onClick={onOpen} className=" bg-transparent text-neutral-300 font-medium">
+                  Sign up
+                </Button>
+              </div>
+              <div>
+                <Button onClick={onOpen} className="bg-white px-6 py-2">
+                  Log in
+                </Button>
+              </div>
+            </>
+          )}
+          
         </div>
       </div>
       {children}
