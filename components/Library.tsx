@@ -1,10 +1,23 @@
 "use client"
 import {TbPlaylist} from 'react-icons/tb'
 import {AiOutlinePlus} from 'react-icons/ai'
-const Library = () => {
 
+import useAuthModal from '@/hooks/useAuthModal'
+import { useUser } from '@/hooks/useUser'
+import useUploadModal from '@/hooks/useUploadModal'
+import { Song } from '@/types'
+import LibraryItem from './LibraryItem'
+
+interface LibraryProps {
+  songs: Song[]
+}
+const Library: React.FC<LibraryProps> = ({songs}) => {
+
+  const authModal = useAuthModal();
+  const uploadModal = useUploadModal();
+  const {user} = useUser();
   const onClick = () => {
-
+    !user ? authModal.onOpen() : uploadModal.onOpen();
   }
   return (
     <div className="flex flex-col">
@@ -16,7 +29,7 @@ const Library = () => {
         <AiOutlinePlus size={20} onClick={onClick} className='text-neutral-400 cursor-pointer transition hover:text-white'/>
       </div>
       <div className='flex flex-col gap-y-2 mt-4 px-3'>
-        List of songs
+        {songs?.map(song => <LibraryItem data={song} onClick={() => {}}/>)}
       </div>
     </div>
   )
