@@ -11,6 +11,7 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import { useUser } from "@/hooks/useUser"
 import { FaUserAlt } from "react-icons/fa"
 import {toast} from 'react-hot-toast'
+import usePlayer from "@/hooks/usePlayer"
 
 interface HeaderInterface {
   children: React.ReactNode,
@@ -18,14 +19,15 @@ interface HeaderInterface {
 }
 
 const Header :React.FC<HeaderInterface> = ({children, className}) => {
-  const router = useRouter()
-  const {onOpen} = useAuthModal()
-  const supabaseClient = useSupabaseClient()
-  const {user} = useUser()
+  const router = useRouter();
+  const {onOpen} = useAuthModal();
+  const supabaseClient = useSupabaseClient();
+  const {user} = useUser();
+  const player = usePlayer();
 
   const handleLogout = async () => {
     const { error } = await supabaseClient.auth.signOut();
-
+    player.reset();
     router.refresh();
 
     if (error) {
@@ -97,4 +99,4 @@ const Header :React.FC<HeaderInterface> = ({children, className}) => {
   )
 }
 
-export default Header
+export default Header;
