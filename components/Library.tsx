@@ -8,6 +8,7 @@ import useUploadModal from '@/hooks/useUploadModal'
 import { Song } from '@/types'
 import LibraryItem from './LibraryItem'
 import useOnPlay from '@/hooks/useOnPlay'
+import useSubscribeModal from '@/hooks/useSubscribeModal'
 
 interface LibraryProps {
   songs: Song[]
@@ -16,10 +17,21 @@ const Library: React.FC<LibraryProps> = ({songs}) => {
   const onPlay = useOnPlay(songs);
   const authModal = useAuthModal();
   const uploadModal = useUploadModal();
-  const {user} = useUser();
+  const subscribeModal = useSubscribeModal();
+  const { user, subscription } = useUser();
+
   const onClick = () => {
-    !user ? authModal.onOpen() : uploadModal.onOpen();
+    if (!user) {
+      return authModal.onOpen();
+    }
+
+    if (!subscription) {
+      return subscribeModal.onOpen();
+    }
+
+    return uploadModal.onOpen();
   }
+  
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between px-5 py-4">
